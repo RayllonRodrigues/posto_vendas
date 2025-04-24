@@ -1,0 +1,31 @@
+<?php
+class FluxoCaixa {
+    private $conn;
+
+    public function __construct($conn) {
+        $this->conn = $conn;
+    }
+
+    // Adicionar movimentação
+    public function adicionarMovimentacao($tipo, $descricao, $valor) {
+        $stmt = $this->conn->prepare("INSERT INTO fluxo_caixa (tipo, descricao, valor) VALUES (?, ?, ?)");
+        $stmt->bind_param("ssd", $tipo, $descricao, $valor);
+        return $stmt->execute();
+    }
+
+    // Obter todas as movimentações
+    public function listarMovimentacoes() {
+        return $this->conn->query("SELECT * FROM fluxo_caixa ORDER BY data_movimentacao DESC");
+    }
+
+    // Obter saldo atual
+    public function obterSaldo() {
+        $query = "SELECT 
+                    SUM(CASE WHEN tipo = 'entrada' THEN valor ELSE 0 END) AS total_entrada, 
+                    SUM(CASE WHEN tipo = 'saida' THEN valor ELSE 0 END) AS total_saida 
+                  FROM fluxo_caixa";
+        $result = $this->conn->query($query);
+        return $result->fetch_assoc();
+    }
+}
+?>

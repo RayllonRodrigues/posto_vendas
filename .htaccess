@@ -1,0 +1,8 @@
+# Habilitar o RewriteEngine para URLs amigáveis
+RewriteEngine On
+RewriteBase /posto/
+
+# Redirecionar para index.php se não for um arquivo ou pasta existente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
